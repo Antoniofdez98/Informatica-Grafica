@@ -676,7 +676,7 @@ giro_primer_brazo = 0.0;
 giro_primer_brazo_max = 0;
 giro_primer_brazo_min = -90;
 giro_segundo_brazo = 0.0;
-giro_segundo_brazo_max = 30;
+giro_segundo_brazo_max = 30.0;
 giro_segundo_brazo_min = 0;
 giro_pala = 0.0;
 giro_pala_max = 50.0;
@@ -720,8 +720,9 @@ glPopMatrix();
 
 _brazo2::_brazo2()
 {
-float  radio = 0.4;
-float  altura = 3.5;
+
+radio = 0.4;
+altura = 3.5;
 
 vector<_vertex3f> perfil;
 _vertex3f aux;
@@ -736,7 +737,8 @@ tronco.parametros(perfil,12,0,1,1);
 void _brazo2::draw(_modo modo, float r, float g, float b, float grosor)
 {
   glPushMatrix();
-  glRotatef(-20, 0, 0, 45);
+  glRotatef(-20, 0, 0, 1);
+  glTranslatef(0,-altura/2.0,0);
   tronco.draw(modo, r, g, b, grosor);
   glPopMatrix();
 };
@@ -747,8 +749,8 @@ void _brazo2::draw(_modo modo, float r, float g, float b, float grosor)
 
 _brazo3::_brazo3()
 {
-float  radio = 0.4;
-float  altura = 3.5;
+radio = 0.4;
+altura = 3.5;
 
 vector<_vertex3f> perfil;
 _vertex3f aux;
@@ -763,7 +765,8 @@ tronco.parametros(perfil,12,0,1,1);
 void _brazo3::draw(_modo modo, float r, float g, float b, float grosor)
 {
   glPushMatrix();
-  glRotatef(20, 0, 0, 45);
+  glRotatef(20, 0, 0, 1);
+  glTranslatef(0,-altura/2.0,0);
   tronco.draw(modo, r, g, b, grosor);
   glPopMatrix();
 };
@@ -774,7 +777,7 @@ void _brazo3::draw(_modo modo, float r, float g, float b, float grosor)
 
 _top::_top()
 {
-float  radio = 0.1;
+float  radio = 0.15;
 float  altura = 1;
 
 vector<_vertex3f> perfil;
@@ -796,45 +799,140 @@ void _top::draw(_modo modo, float r, float g, float b, float grosor)
 };
 
 //************************************************************************
+// Mid
+//************************************************************************
+
+_mid::_mid()
+{
+float  radio = 0.15;
+float  altura = 8;
+
+vector<_vertex3f> perfil;
+_vertex3f aux;
+
+aux.x=radio; aux.y=-altura/2.0; aux.z=0.0;
+perfil.push_back(aux);
+aux.x=radio; aux.y=altura/2.0; aux.z=0.0;
+perfil.push_back(aux);
+tronco.parametros(perfil,12,0,1,1);
+}
+
+void _mid::draw(_modo modo, float r, float g, float b, float grosor)
+{
+  glPushMatrix();
+  glRotatef(90, 0, 0, 1);
+  tronco.draw(modo, r, g, b, grosor);
+  glPopMatrix();
+};
+
+//************************************************************************
+// Circ
+//************************************************************************
+
+_circ::_circ()
+{
+float  radio = 1;
+float  altura = 0.2;
+
+vector<_vertex3f> perfil;
+_vertex3f aux;
+
+aux.x=radio; aux.y=-altura/2.0; aux.z=0.0;
+perfil.push_back(aux);
+aux.x=radio; aux.y=altura/2.0; aux.z=0.0;
+perfil.push_back(aux);
+tronco.parametros(perfil,12,0,1,1);
+}
+
+void _circ::draw(_modo modo, float r, float g, float b, float grosor)
+{
+  glPushMatrix();
+  glRotatef(90, 0, 0, 1);
+  tronco.draw(modo, r, g, b, grosor);
+  glPopMatrix();
+};
+
+//************************************************************************
+// Rectangulo
+//************************************************************************
+
+_rectangulo::_rectangulo()
+{
+ancho=2;
+alto=2;
+fondo=0.5;
+cubo.colors_chess(1.0,1.0,0.0,0.0,0.0,1.0);
+};
+
+void _rectangulo::draw(_modo modo, float r, float g, float b, float grosor)
+{
+glPushMatrix();
+glScalef(ancho, alto, fondo);
+cubo.draw(modo, r, g, b, grosor);
+glPopMatrix();
+};
+
+//************************************************************************
 // Compas
 //************************************************************************
 
 _compas::_compas()
 {
-desplazamiento = 0.0;
 giro_primer_brazo = 0.0;
-giro_primer_brazo_max = 0;
-giro_primer_brazo_min = -90;
+giro_primer_brazo_max = 40.0;
+giro_primer_brazo_min = 0.0;
+giro_primer_brazo_completo = 0.0;
+giro_primer_brazo_completo_max = 5.0;
+giro_primer_brazo_completo_min = -20.0;
+giro_segundo_brazo_completo = 0.0;
+giro_segundo_brazo_completo_max = 20.0;
+giro_segundo_brazo_completo_min = -5.0;
 giro_segundo_brazo = 0.0;
-giro_segundo_brazo_max = 30;
-giro_segundo_brazo_min = 0;
+giro_segundo_brazo_max = 0.0;
+giro_segundo_brazo_min = -40.0;
+giro_compas = 0.0;
+giro_rueda = 0.0;
 
 };
 
 void _compas::draw(_modo modo, float r, float g, float b, float grosor)
 {
-glTranslatef(desplazamiento, 0, 0);
+
 glPushMatrix();
-brazo2.draw(modo, r, g, b, grosor);
-glPopMatrix();
-
-glTranslatef(1.19,3.28,0);
-glRotatef(giro_segundo_brazo,0,0,1);
-brazo2.draw(modo, r, g, b, grosor);
-
-glTranslatef(desplazamiento+2, 0, 0);
-glPushMatrix();
-brazo3.draw(modo, r, g, b, grosor);
-glPopMatrix();
-
-glTranslatef(1.19,-3.28,0);
-glRotatef(giro_segundo_brazo,0,0,1);
-brazo3.draw(modo, r, g, b, grosor);
-
-glTranslatef(-2.25,7,0);
-glRotatef(giro_segundo_brazo,0,0,1);
+glTranslatef(0,0,0);
+glRotatef(giro_compas,0,1,0);
 top.draw(modo, r, g, b, grosor);
 
+glTranslatef(0,-1.3,0);
+rectangulo.draw(modo, r, g, b, grosor);
+
+glPushMatrix();
+glTranslatef(0, -0.5, 0);
+glRotatef(giro_primer_brazo_completo,0,0,1);
+brazo2.draw(modo, r, g, b, grosor);
+
+glTranslatef(-1.2, -3.3, 0);
+glRotatef(giro_primer_brazo,0,0,1);
+brazo2.draw(modo, r, g, b, grosor);
+glPopMatrix();
+
+glPushMatrix();
+glTranslatef(0, -0.5, 0);
+glRotatef(giro_segundo_brazo_completo,0,0,1);
+brazo3.draw(modo, r, g, b, grosor);
+
+glTranslatef(1.2, -3.3, 0);
+glRotatef(giro_segundo_brazo,0,0,1);
+brazo3.draw(modo, r, g, b, grosor);
+glPopMatrix();
+
+glPushMatrix();
+glTranslatef(0,-3.5,0);
+glRotatef(giro_rueda,1,0,0);
+mid.draw(modo, r, g, b, grosor);
+glTranslatef(0,0,0);
+circ.draw(modo, r, g, b, grosor);
+glPopMatrix();
 
 glPopMatrix();
 };

@@ -220,8 +220,38 @@ switch (Tecla1){
    case GLUT_KEY_PAGE_UP:Observer_distance*=1.2;break;
    case GLUT_KEY_PAGE_DOWN:Observer_distance/=1.2;break;
 	
+   case GLUT_KEY_F1:compas.giro_compas+=5;break;
+   case GLUT_KEY_F2:compas.giro_compas-=5;break;
+
+    case GLUT_KEY_F3:compas.giro_primer_brazo+=1;
+        if (compas.giro_primer_brazo > compas.giro_primer_brazo_max)
+            compas.giro_primer_brazo = compas.giro_primer_brazo_max;break;
+   case GLUT_KEY_F4:compas.giro_primer_brazo-=1;
+        if (compas.giro_primer_brazo < compas.giro_primer_brazo_min)
+            compas.giro_primer_brazo = compas.giro_primer_brazo_min;break;
+    case GLUT_KEY_F5:compas.giro_segundo_brazo-=1;
+        if (compas.giro_segundo_brazo < compas.giro_segundo_brazo_min)
+            compas.giro_segundo_brazo = compas.giro_segundo_brazo_min;break;
+   case GLUT_KEY_F6:compas.giro_segundo_brazo+=1;
+        if (compas.giro_segundo_brazo > compas.giro_segundo_brazo_max)
+            compas.giro_segundo_brazo = compas.giro_segundo_brazo_max;break;
+   case GLUT_KEY_F7:compas.giro_primer_brazo_completo+=1;
+        if (compas.giro_primer_brazo_completo > compas.giro_primer_brazo_completo_max)
+            compas.giro_primer_brazo_completo = compas.giro_primer_brazo_completo_max;break;
+   case GLUT_KEY_F8:compas.giro_primer_brazo_completo-=1;
+        if (compas.giro_primer_brazo_completo < compas.giro_primer_brazo_completo_min)
+            compas.giro_primer_brazo_completo = compas.giro_primer_brazo_completo_min;break;
+   case GLUT_KEY_F9:compas.giro_segundo_brazo_completo+=1;
+        if (compas.giro_segundo_brazo_completo > compas.giro_segundo_brazo_completo_max)
+            compas.giro_segundo_brazo_completo = compas.giro_segundo_brazo_completo_max;break;
+   case GLUT_KEY_F10:compas.giro_segundo_brazo_completo-=1;
+        if (compas.giro_segundo_brazo_completo < compas.giro_segundo_brazo_completo_min)
+            compas.giro_segundo_brazo_completo = compas.giro_segundo_brazo_completo_min;break;
+    case GLUT_KEY_F11:compas.giro_rueda+=5;break;
+   /*
    case GLUT_KEY_F1:excavadora.giro_cabina+=5;break;
    case GLUT_KEY_F2:excavadora.giro_cabina-=5;break;
+
    case GLUT_KEY_F3:excavadora.giro_primer_brazo+=1;
         if (excavadora.giro_primer_brazo > excavadora.giro_primer_brazo_max)
             excavadora.giro_primer_brazo = excavadora.giro_primer_brazo_max;break;
@@ -240,6 +270,7 @@ switch (Tecla1){
    case GLUT_KEY_F8:excavadora.giro_pala-=1;
         if (excavadora.giro_pala < excavadora.giro_pala_min)
             excavadora.giro_pala = excavadora.giro_pala_min;break;
+   */
 	}
 glutPostRedisplay();
 }

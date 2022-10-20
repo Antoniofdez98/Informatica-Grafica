@@ -277,8 +277,8 @@ public:
       _brazo2();
 void  draw(_modo modo, float r, float g, float b, float grosor);
 
-float radio;
-float altura;
+float  radio;
+float  altura;
 
 protected:
 _rotacion tronco;
@@ -319,6 +319,58 @@ _rotacion tronco;
 };
 
 //************************************************************************
+// Mid
+//************************************************************************
+
+class _mid: public _triangulos3D
+{
+public:
+      _mid();
+void  draw(_modo modo, float r, float g, float b, float grosor);
+
+float radio;
+float altura;
+
+protected:
+_rotacion tronco;
+};
+
+//************************************************************************
+// Circ
+//************************************************************************
+
+class _circ: public _triangulos3D
+{
+public:
+      _circ();
+void  draw(_modo modo, float r, float g, float b, float grosor);
+
+float radio;
+float altura;
+
+protected:
+_rotacion tronco;
+};
+
+//************************************************************************
+// cabina
+//************************************************************************
+
+class _rectangulo: public _triangulos3D
+{
+public:
+       _rectangulo();
+void  draw(_modo modo, float r, float g, float b, float grosor);
+
+float ancho;
+float alto;
+float fondo;
+
+protected:
+_cubo cubo;
+};
+
+//************************************************************************
 // Compas
 //************************************************************************
 
@@ -331,16 +383,27 @@ void  draw(_modo modo, float r, float g, float b, float grosor);
 
 float desplazamiento;
 float giro_primer_brazo;
+float giro_primer_brazo_completo;
 float giro_segundo_brazo;
+float giro_segundo_brazo_completo;
 
 float giro_primer_brazo_max;
 float giro_primer_brazo_min;
+float giro_primer_brazo_completo_max;
+float giro_primer_brazo_completo_min;
+float giro_segundo_brazo_completo_max;
+float giro_segundo_brazo_completo_min;
 float giro_segundo_brazo_max;
 float giro_segundo_brazo_min;
+float giro_compas;
+float giro_rueda;
 
 
 protected:
 _brazo2 brazo2;
 _brazo3 brazo3;
 _top top;
+_rectangulo rectangulo;
+_mid mid;
+_circ circ;
 };
