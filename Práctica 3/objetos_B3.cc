@@ -860,8 +860,7 @@ _rectangulo::_rectangulo()
 {
 ancho=2;
 alto=2;
-fondo=0.5;
-cubo.colors_chess(1.0,1.0,0.0,0.0,0.0,1.0);
+fondo=0.8;
 };
 
 void _rectangulo::draw(_modo modo, float r, float g, float b, float grosor)
@@ -873,9 +872,65 @@ glPopMatrix();
 };
 
 //************************************************************************
-// Compas
+// Pincho
 //************************************************************************
 
+_pincho::_pincho()
+{
+vector<_vertex3f> perfil;
+_vertex3f aux;
+
+radio=0.4;
+altura=1;
+num=6;
+
+aux.x=radio; aux.y=0; aux.z=0.0;
+perfil.push_back(aux);
+aux.x=0.0; aux.y=altura; aux.z=0.0;
+perfil.push_back(aux);
+pincho.parametros(perfil,num,1,1,1);
+};
+
+void _pincho::draw(_modo modo, float r, float g, float b, float grosor)
+{
+glPushMatrix();
+glRotatef(160, 0, 0, 1);
+pincho.draw(modo, r, g, b, grosor);
+glPopMatrix();
+};
+
+//************************************************************************
+// Pincho2
+//************************************************************************
+
+_pincho2::_pincho2()
+{
+vector<_vertex3f> perfil;
+_vertex3f aux;
+
+radio=0.4;
+altura=1;
+num=6;
+
+aux.x=radio; aux.y=0; aux.z=0.0;
+perfil.push_back(aux);
+aux.x=0.0; aux.y=altura; aux.z=0.0;
+perfil.push_back(aux);
+pincho.parametros(perfil,num,1,1,1);
+};
+
+void _pincho2::draw(_modo modo, float r, float g, float b, float grosor)
+{
+glPushMatrix();
+glRotatef(-160, 0, 0, 1);
+pincho.draw(modo, r, g, b, grosor);
+glPopMatrix();
+};
+
+//************************************************************************
+// Compas
+//************************************************************************
+ 
 _compas::_compas()
 {
 giro_primer_brazo = 0.0;
@@ -914,6 +969,9 @@ brazo2.draw(modo, r, g, b, grosor);
 glTranslatef(-1.2, -3.3, 0);
 glRotatef(giro_primer_brazo,0,0,1);
 brazo2.draw(modo, r, g, b, grosor);
+
+glTranslatef(-1.2, -3.3, 0);
+pincho.draw(modo, r, g, b, grosor);
 glPopMatrix();
 
 glPushMatrix();
@@ -924,6 +982,9 @@ brazo3.draw(modo, r, g, b, grosor);
 glTranslatef(1.2, -3.3, 0);
 glRotatef(giro_segundo_brazo,0,0,1);
 brazo3.draw(modo, r, g, b, grosor);
+
+glTranslatef(1.2, -3.3, 0);
+pincho2.draw(modo, r, g, b, grosor);
 glPopMatrix();
 
 glPushMatrix();

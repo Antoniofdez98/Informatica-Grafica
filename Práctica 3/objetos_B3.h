@@ -353,7 +353,7 @@ _rotacion tronco;
 };
 
 //************************************************************************
-// cabina
+// Rectangulo
 //************************************************************************
 
 class _rectangulo: public _triangulos3D
@@ -368,6 +368,42 @@ float fondo;
 
 protected:
 _cubo cubo;
+};
+
+//************************************************************************
+// Pincho
+//************************************************************************
+
+class _pincho: public _triangulos3D
+{
+public:
+       _pincho();
+void  draw(_modo modo, float r, float g, float b, float grosor);
+
+float radio;
+float altura;
+int num;
+
+protected:
+_rotacion pincho;
+};
+
+//************************************************************************
+// Pincho2
+//************************************************************************
+
+class _pincho2: public _triangulos3D
+{
+public:
+       _pincho2();
+void  draw(_modo modo, float r, float g, float b, float grosor);
+
+float radio;
+float altura;
+int num;
+
+protected:
+_rotacion pincho;
 };
 
 //************************************************************************
@@ -406,4 +442,6 @@ _top top;
 _rectangulo rectangulo;
 _mid mid;
 _circ circ;
+_pincho pincho;
+_pincho2 pincho2;
 };
