@@ -6,7 +6,7 @@ Presionando Teclas:
  - 'Q' Sale del ejecutable
  - '1' Dibuja los puntos
  - '2' Dibuja las líneas
- - '3' Dibuja en un color solido
+ - '3' Dibuja en un color sólido
  - '4' Dibuja en colores
  - 'P' Dibuja la Pirámide
  - 'C' Dibuja el Cubo
@@ -29,5 +29,5 @@ Movimientos del Compás:
  - 'F8' Mueve la patilla completa de la izquierda hacia arriba
  - 'F9' Mueve la patilla completa de la derecha hacia abajo
  - 'F10' Mueve la patilla completa de la derecha hacia arriba
- - 'F11' Gira la rueda y la turca del centro 
+ - 'F11' Gira la rueda y la tuerca del centro 
  
