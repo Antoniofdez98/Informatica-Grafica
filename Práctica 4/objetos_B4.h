@@ -1,5 +1,5 @@
 //**************************************************************************
-// Pr�ctica IG usando objetos
+// Práctica 2 
 //**************************************************************************
 
 #include <vector>
@@ -8,10 +8,9 @@
 #include <stdlib.h>
 #include "file_ply_stl.hpp"
 
-using namespace std;
 
-const float AXIS_SIZE = 5000;
-typedef enum{POINTS,EDGES,SOLID_CHESS,SOLID,SOLID_ILLUMINATED_FLAT,SOLID_ILLUMINATED_GOURAUD} _modo;
+const float AXIS_SIZE=5000;
+typedef enum{POINTS,EDGES,SOLID,SOLID_COLORS,SOLID_ILLUMINATED_FLAT,SOLID_ILLUMINATED_GOURAUD} _modo;
 
 //*************************************************************************
 // clase punto
@@ -20,187 +19,448 @@ typedef enum{POINTS,EDGES,SOLID_CHESS,SOLID,SOLID_ILLUMINATED_FLAT,SOLID_ILLUMIN
 class _puntos3D
 {
 public:
-       _puntos3D();
-       void draw_puntos(float r, float g, float b, int grosor);
 
-       vector<_vertex3f> vertices;
+  
+	_puntos3D();
+void 	draw_puntos(float r, float g, float b, int grosor);
+
+vector<_vertex3f> vertices;
+vector<_vertex3f> colores_vertices;
 };
 
 //*************************************************************************
-// clase tri�ngulo
+// clase triángulo
 //*************************************************************************
 
-class _triangulos3D : public _puntos3D
+class _triangulos3D: public _puntos3D
 {
 public:
-       _triangulos3D();
-       void draw_aristas(float r, float g, float b, int grosor);
-       void draw_solido(float r, float g, float b);
-       void draw_solido_ajedrez(float r1, float g1, float b1, float r2, float g2, float b2);
 
-       //Metodos a escribir
-       void draw_iluminacion_plana();
-       void draw_iluminacion_suave();
+	_triangulos3D();
+void 	draw_aristas(float r, float g, float b, int grosor);
+void   draw_solido(float r, float g, float b);
+void 	draw_solido_colores();
+void 	draw(_modo modo, float r, float g, float b, float grosor);
 
-       void draw(_modo modo, float r1, float g1, float b1, float r2, float g2, float b2, float grosor);
+//Metodos a escribir
+void draw_iluminacion_plana();
+void draw_iluminacion_suave();
 
-       //Metodos a escribir
-       void calcular_normales_caras();
-       void calcular_normales_vertices();
+/* asignación de colores */
+void 	colors_random();
+void 	colors_chess(float r1, float g1, float b1, float r2, float g2, float b2);
 
-       vector<_vertex3i> caras;
+//Metodos a escribir
+void calcular_normales_caras();
+void calcular_normales_vertices();
 
-       //Almacenamos los calculos
-       vector<_vertex3f> normales_caras;
-       vector<_vertex3f> normales_vertices;
+vector<_vertex3i> caras;
+vector<_vertex3f> colores_caras;
 
-       bool b_normales_caras;
-       bool b_normales_vertices;
+//Almacenamos los calculos
+vector<_vertex3f> normales_caras;
+vector<_vertex3f> normales_vertices;
 
-       _vertex4f ambiente_difusa; //coeficientes ambiente y difuso
-       _vertex4f especular;       //coeficiente especular
-       float brillo;              //exponente del brillo
+bool b_normales_caras;
+bool b_normales_vertices;
+
+_vertex4f ambiente_difusa; //coeficientes ambiente y difuso
+_vertex4f especular;       //coeficiente especular
+float brillo;              //exponente del brillo
 };
+
+//*************************************************************************
+// objetos o modelos
+//*************************************************************************
 
 //*************************************************************************
 // clase cubo
 //*************************************************************************
 
-class _cubo : public _triangulos3D
+class _cubo: public _triangulos3D
 {
 public:
-       _cubo(float tam = 0.5);
+
+	_cubo(float tam=0.5);
 };
+
 
 //*************************************************************************
 // clase piramide
 //*************************************************************************
 
-class _piramide : public _triangulos3D
+class _piramide: public _triangulos3D
 {
 public:
-       _piramide(float tam = 0.5, float al = 0.75);
+
+	_piramide(float tam=0.5, float al=1.0);
 };
 
 //*************************************************************************
 // clase objeto ply
 //*************************************************************************
 
-class _objeto_ply : public _triangulos3D
+class _objeto_ply: public _triangulos3D
 {
 public:
-       _objeto_ply();
+   _objeto_ply();
 
-       int parametros(char *archivo);
+void  parametros(char *archivo);
 };
 
 //************************************************************************
-// objeto por revoluci�n
+// objeto por revolución
 //************************************************************************
+// tipo indica si es una figura por revolución normal o bien un cono o una esfera
+// tipo=0 normal, tipo=1 cono, tipo=2 esfera
+// tapa_in=0 sin tapa, tapa_in=1 con tapa
+// tapa_su=0 sin tapa, tapa_su=1 con tapa
 
-class _rotacion : public _triangulos3D
+class _rotacion: public _triangulos3D
 {
 public:
        _rotacion();
-       void parametros(vector<_vertex3f> perfil1, int num1, int tapas);
+       
+void  parametros(vector<_vertex3f> perfil, int num, int tipo, int tapa_in, int tapa_su);
+};
 
-       vector<_vertex3f> perfil;
-       int num;
+ 
+//************************************************************************
+// cilindro
+//************************************************************************
+
+class _cilindro: public _rotacion
+{
+public:
+       _cilindro(float radio=1.0, float altura=2.0, int num=12);
 };
 
 //************************************************************************
-// objeto cono
+// cono
 //************************************************************************
 
-class _cono : public _rotacion
+class _cono: public _rotacion
 {
 public:
        _cono(float radio, float altura, int num);
 };
 
 //************************************************************************
-// objeto cilindro
+// esfera
 //************************************************************************
 
-class _cilindro : public _rotacion
+class _esfera: public _rotacion
 {
 public:
-       _cilindro(float radio, int num);
+       _esfera(float radio, int num1, int num2);
+};
+
+
+//************************************************************************
+// rotacion archivo PLY
+//************************************************************************
+
+class _rotacion_PLY: public _rotacion
+{
+public:
+       _rotacion_PLY();
+void  parametros_PLY(char *archivo, int num);
+};
+
+
+//************************************************************************
+// objeto por extrusión
+//************************************************************************
+
+class _extrusion: public _triangulos3D
+{
+public:
+       _extrusion(vector<_vertex3f> poligono, float x, float y, float z);
+};
+
+
+//************************************************************************
+// práctica 3, objeto jerárquico articulado excavadora
+//************************************************************************
+
+//************************************************************************
+// piezas
+//************************************************************************
+
+//************************************************************************
+// pala
+//************************************************************************
+
+class _pala: public _triangulos3D
+{
+public:
+      _pala(float radio=1.0, float ancho=2.0, int num=8);
 };
 
 //************************************************************************
-// objeto esfera
+// brazo
 //************************************************************************
 
-class _esfera : public _rotacion
+class _brazo: public _triangulos3D
 {
 public:
-       _esfera(int radio, int num);
-};
+      _brazo();
+void  draw(_modo modo, float r, float g, float b, float grosor);
 
-//************************************************************************
-// objeto articulado: tanque
-//************************************************************************
-
-class _chasis : public _triangulos3D
-{
-public:
-       _chasis();
-       void draw(_modo modo, float r1, float g1, float b1, float r2, float g2, float b2, float grosor);
-
-       float altura;
+float ancho;
+float alto;
+float fondo;
 
 protected:
-       _rotacion rodamiento;
-       _cubo base;
+_cubo cubo;
 };
 
 //************************************************************************
+// cabina
+//************************************************************************
 
-class _torreta : public _triangulos3D
+class _cabina: public _triangulos3D
 {
 public:
-       _torreta();
-       void draw(_modo modo, float r1, float g1, float b1, float r2, float g2, float b2, float grosor);
+       _cabina();
+void  draw(_modo modo, float r, float g, float b, float grosor);
 
-       float altura;
-       float anchura;
+float ancho;
+float alto;
+float fondo;
 
 protected:
-       _cubo base;
-       _piramide parte_trasera;
+_cubo cubo;
 };
 
 //************************************************************************
+// sustentación
+//************************************************************************
 
-class _tubo : public _triangulos3D
+class _sustentacion: public _triangulos3D
 {
 public:
-       _tubo();
-       void draw(_modo modo, float r1, float g1, float b1, float r2, float g2, float b2, float grosor);
+      _sustentacion();
+void  draw(_modo modo, float r, float g, float b, float grosor);
+       
+float ancho;
+float alto;
+float fondo;
+
+float radio;
 
 protected:
-       _rotacion tubo_abierto; // ca�a del ca��n
+_cilindro rueda;
+_cubo base;
 };
 
 //************************************************************************
+// excavadora (montaje del objeto final)
+//************************************************************************
 
-class _tanque : public _triangulos3D
+class _excavadora: public _triangulos3D
 {
 public:
-       _tanque();
-       void draw(_modo modo, float r1, float g1, float b1, float r2, float g2, float b2, float grosor);
+       _excavadora();
+       
+void  draw(_modo modo, float r, float g, float b, float grosor);
 
-       float giro_tubo;
-       float giro_torreta;
+float giro_cabina;
+float giro_primer_brazo;
+float giro_segundo_brazo;
+float giro_pala;
 
-       float giro_tubo_min;
-       float giro_tubo_max;
+float giro_primer_brazo_max;
+float giro_primer_brazo_min;
+float giro_segundo_brazo_max;
+float giro_segundo_brazo_min;
+float giro_pala_max;
+float giro_pala_min;
+
+float tamanio_pala;
 
 protected:
-       _chasis chasis;
-       _torreta torreta;
-       _tubo tubo;
+_pala pala;
+_brazo brazo;
+_cabina cabina;
+_sustentacion sustentacion;
 };
 
+//************************************************************************
+// brazo2
+//************************************************************************
 
+class _brazo2: public _triangulos3D
+{
+public:
+      _brazo2();
+void  draw(_modo modo, float r, float g, float b, float grosor);
+
+float  radio;
+float  altura;
+
+protected:
+_rotacion tronco;
+};
+
+//************************************************************************
+// brazo3
+//************************************************************************
+
+class _brazo3: public _triangulos3D
+{
+public:
+      _brazo3();
+void  draw(_modo modo, float r, float g, float b, float grosor);
+
+float radio;
+float altura;
+
+protected:
+_rotacion tronco;
+};
+
+//************************************************************************
+// Top
+//************************************************************************
+
+class _top: public _triangulos3D
+{
+public:
+      _top();
+void  draw(_modo modo, float r, float g, float b, float grosor);
+
+float radio;
+float altura;
+
+protected:
+_rotacion tronco;
+};
+
+//************************************************************************
+// Mid
+//************************************************************************
+
+class _mid: public _triangulos3D
+{
+public:
+      _mid();
+void  draw(_modo modo, float r, float g, float b, float grosor);
+
+float radio;
+float altura;
+
+protected:
+_rotacion tronco;
+};
+
+//************************************************************************
+// Circ
+//************************************************************************
+
+class _circ: public _triangulos3D
+{
+public:
+      _circ();
+void  draw(_modo modo, float r, float g, float b, float grosor);
+
+float radio;
+float altura;
+
+protected:
+_rotacion tronco;
+};
+
+//************************************************************************
+// Rectangulo
+//************************************************************************
+
+class _rectangulo: public _triangulos3D
+{
+public:
+       _rectangulo();
+void  draw(_modo modo, float r, float g, float b, float grosor);
+
+float ancho;
+float alto;
+float fondo;
+
+protected:
+_cubo cubo;
+};
+
+//************************************************************************
+// Pincho
+//************************************************************************
+
+class _pincho: public _triangulos3D
+{
+public:
+       _pincho();
+void  draw(_modo modo, float r, float g, float b, float grosor);
+
+float radio;
+float altura;
+int num;
+
+protected:
+_rotacion pincho;
+};
+
+//************************************************************************
+// Pincho2
+//************************************************************************
+
+class _pincho2: public _triangulos3D
+{
+public:
+       _pincho2();
+void  draw(_modo modo, float r, float g, float b, float grosor);
+
+float radio;
+float altura;
+int num;
+
+protected:
+_rotacion pincho;
+};
+
+//************************************************************************
+// Compas
+//************************************************************************
+
+class _compas: public _triangulos3D
+{
+public:
+       _compas();
+       
+void  draw(_modo modo, float r, float g, float b, float grosor);
+
+float desplazamiento;
+float giro_primer_brazo;
+float giro_primer_brazo_completo;
+float giro_segundo_brazo;
+float giro_segundo_brazo_completo;
+
+float giro_primer_brazo_max;
+float giro_primer_brazo_min;
+float giro_primer_brazo_completo_max;
+float giro_primer_brazo_completo_min;
+float giro_segundo_brazo_completo_max;
+float giro_segundo_brazo_completo_min;
+float giro_segundo_brazo_max;
+float giro_segundo_brazo_min;
+float giro_compas;
+float giro_rueda;
+
+
+protected:
+_brazo2 brazo2;
+_brazo3 brazo3;
+_top top;
+_rectangulo rectangulo;
+_mid mid;
+_circ circ;
+_pincho pincho;
+_pincho2 pincho2;
+};
