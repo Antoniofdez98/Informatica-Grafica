@@ -16,6 +16,8 @@ typedef enum{CUBO, PIRAMIDE, OBJETO_PLY, ROTACION, CILINDRO, CONO, ESFERA, EXTRU
 _tipo_objeto t_objeto=CUBO;
 _modo   modo=POINTS;
 
+bool animacion = false;
+
 // variables que definen la posicion de la camara en coordenadas polares
 GLfloat Observer_distance;
 GLfloat Observer_angle_x;
@@ -185,8 +187,12 @@ switch (toupper(Tecla1)){
 	case '2':modo=EDGES;break;
 	case '3':modo=SOLID;break;
 	case '4':modo=SOLID_COLORS;break;
-	case '5':modo = SOLID_ILLUMINATED_FLAT;break;
-	case '6':modo = SOLID_ILLUMINATED_GOURAUD;break;
+	case '5':modo = SOLID_ILLUMINATED_FLAT;glEnable(GL_LIGHT1);break;
+	case '6':modo = SOLID_ILLUMINATED_GOURAUD;glEnable(GL_LIGHT1);break;
+	case '7':glDisable(GL_LIGHT1);break;
+    case '8':glEnable(GL_LIGHT1);break;
+	case '9':glDisable(GL_LIGHT2);break;
+    case '0':glEnable(GL_LIGHT2);break;
         case 'P':t_objeto=PIRAMIDE;break;
         case 'C':t_objeto=CUBO;break;
         case 'O':t_objeto=OBJETO_PLY;break;	
@@ -250,6 +256,16 @@ switch (Tecla1){
         if (compas.giro_segundo_brazo_completo < compas.giro_segundo_brazo_completo_min)
             compas.giro_segundo_brazo_completo = compas.giro_segundo_brazo_completo_min;break;
     case GLUT_KEY_F11:compas.giro_rueda+=5;break;
+    case GLUT_KEY_F12:
+                if (animacion == false)
+                {
+                        animacion = true;
+                }
+                else
+                {
+                        animacion = false;
+                }
+                break;
    /*
    case GLUT_KEY_F1:excavadora.giro_cabina+=5;break;
    case GLUT_KEY_F2:excavadora.giro_cabina-=5;break;
@@ -277,7 +293,20 @@ switch (Tecla1){
 glutPostRedisplay();
 }
 
-void luces()
+void movimiento_animado()
+{
+        if (animacion == true)
+        {
+                compas.giro_rueda+=0.01;  
+                glutPostRedisplay();
+        }
+}
+
+//*********************************************************************************************************************
+// Luces
+//*********************************************************************************************************************
+
+void luz1()
 {
 	float luz1[] = {1.0, 1.0, 1.0, 1.0},
 		  pos1[] = {0, 20.0, 40.0, 1.0};
@@ -288,6 +317,17 @@ void luces()
 
 	glDisable(GL_LIGHT0);
 	glEnable(GL_LIGHT1);
+}
+
+void luz2()
+{
+	float luz1[] = {1.0, 1.0, 1.0, 1.0},
+		  pos1[] = {0, -40.0, 40.0, 1.0};
+
+	glLightfv(GL_LIGHT2, GL_DIFFUSE, luz1);
+	glLightfv(GL_LIGHT2, GL_SPECULAR, luz1);
+	glLightfv(GL_LIGHT2, GL_POSITION, pos1);
+
 }
 
 //***************************************************************************
@@ -392,13 +432,16 @@ glutKeyboardFunc(normal_key);
 // asignación de la funcion llamada "tecla_Especial" al evento correspondiente
 glutSpecialFunc(special_key);
 
+glutIdleFunc(movimiento_animado);
+
 // funcion de inicialización
 initialize();
 
 // creación del objeto ply
 ply.parametros(argv[1]);
 
-luces();
+luz1();
+luz2();
 
 //ply = new _objeto_ply(argv[1]);
 

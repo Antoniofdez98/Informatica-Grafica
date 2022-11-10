@@ -138,6 +138,7 @@ switch (modo){
 	}
 }
 
+
 //*************************************************************************
 // dibujar con iluminacion
 //*************************************************************************
@@ -211,34 +212,58 @@ void _triangulos3D::draw_iluminacion_suave()
   glDisable(GL_LIGHTING);
 }
 
+//*************************************************************************
+// calcular normales de las caras
+//*************************************************************************
+
 void _triangulos3D::calcular_normales_caras()
 {
-  _vertex3f a1, a2, n;
+  _vertex3f vector_a, vector_b, aux;
   normales_caras.resize(caras.size());
   int n_c = caras.size();
+  float modulo;
 
   for (int i = 0; i < n_c; i++)
   {
     // obtener dos vectores en el triángulo y calcular el producto vectorial
-    a1 = vertices[caras[i]._1] - vertices[caras[i]._0];
-    a2 = vertices[caras[i]._2] - vertices[caras[i]._0];
-    n = a1.cross_product(a2);
+    vector_a = vertices[caras[i]._1] - vertices[caras[i]._0];
+    vector_b = vertices[caras[i]._2] - vertices[caras[i]._0];
+
+    aux.x = vector_a.y * vector_b.z - vector_a.z * vector_b.y;
+    aux.y = vector_a.z * vector_b.x - vector_a.x * vector_b.z;
+    aux.z = vector_a.x * vector_b.y - vector_a.y * vector_b.x;
+
+    // normalizar
+    modulo = sqrt(aux.x * aux.x + aux.y * aux.y + aux.z * aux.z);
+
+    // normalizar
+    normales_caras[i].x = aux.x / modulo;
+    normales_caras[i].y = aux.y / modulo;
+    normales_caras[i].z = aux.z / modulo;
+
+/*
+    aux = vector_a.cross_product(vector_b);
     // modulo
-    float m = sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
+    float modulo = sqrt(aux.x * aux.x + aux.y * aux.y + aux.z * aux.z);
     // normalización
-    normales_caras[i] = _vertex3f(n.x / m, n.y / m, n.z / m);
+    normales_caras[i] = _vertex3f(aux.x / modulo, aux.y / modulo, aux.z / modulo);
+*/
   }
 
   b_normales_caras = true;
 }
 
+//*************************************************************************
+// calcular normales de los vertices
+//*************************************************************************
+
 void _triangulos3D::calcular_normales_vertices()
 {
-  int n, m, i;
-  n = vertices.size();
-  normales_vertices.resize(n);
+  int n_v, m, i;
+  n_v = vertices.size();
+  normales_vertices.resize(n_v);
 
-  for (i = 0; i < n; i++)
+  for (i = 0; i < n_v; i++)
   {
     normales_vertices[i].x = 0.0;
     normales_vertices[i].y = 0.0;
@@ -258,6 +283,42 @@ void _triangulos3D::calcular_normales_vertices()
 }
 
 //*************************************************************************
+// Con un foco de iluminación fija
+//*************************************************************************
+
+void _triangulos3D::colors_lambert_c(float l_x, float l_y, float l_z, float r, float g, float b)
+{
+  int i, n_c;
+  n_c=caras.size();
+  colores_caras.resize(n_c);
+  _vertex3f luz, aux_luz;
+  float modulo, p_escalar;
+
+  aux_luz.x=l_x;
+  aux_luz.y=l_y;
+  aux_luz.z=l_z;
+
+  for ( i = 0; i < n_c; i++)
+  {
+    luz=aux_luz-vertices[caras[i]._0];
+    modulo=sqrt(luz.x*luz.x+luz.y*luz.y+luz.z*luz.z);
+    luz.x=luz.x/modulo;
+    luz.y=luz.y/modulo;
+    luz.z=luz.z/modulo;
+    p_escalar=luz.x*normales_caras[i].x+luz.y*normales_caras[i].y+luz.z*normales_caras[i].z;
+    if (p_escalar<=0)
+    {
+      p_escalar=0.0;
+    }
+    colores_caras[i].r=r*0.1+r*p_escalar;
+    colores_caras[i].g=g*0.1+g*p_escalar;
+    colores_caras[i].b=b*0.1+b*p_escalar;
+
+  }
+  
+}
+
+//*************************************************************************
 // asignación colores
 //*************************************************************************
 
@@ -274,6 +335,8 @@ for (i=0;i<n_c;i++)
   }
 }
 
+//*************************************************************************
+// asignación colores chess
 //*************************************************************************
 
 void _triangulos3D::colors_chess(float r1, float g1, float b1, float r2, float g2, float b2)
@@ -407,7 +470,12 @@ for (i=0;i<n_car;i++)
    caras[i].z=car_ply[3*i+2];
   }
 
-  
+// normales caras
+calcular_normales_caras();
+//colores
+colors_lambert_c(0, 10, 40, 1.0, 1.0, 0);
+
+/*
 colores_caras.resize(n_car);
 srand(10);
 // colores
@@ -432,6 +500,8 @@ for (i=0;i<n_c;i++)
        else colores_caras[i].g=0.816-sum; 
        }
    }
+
+*/
 }
 
 
@@ -497,8 +567,8 @@ for (j=0;j<num;j++)
 for (j=0;j<num;j++)
  {
      caras[c]._0=j*num_aux;
-     caras[c]._1=((j+1)%num)*num_aux;
-     caras[c]._2=total;
+     caras[c]._1=total;
+     caras[c]._2=((j+1)%num)*num_aux;
      c+=1;
  } 
  
@@ -512,8 +582,8 @@ for (j=0;j<num;j++)
  for (j=0;j<num;j++)
  {
      caras[c]._0=total+1;
-     caras[c]._1=((j+1)%num)*num_aux+num_aux-1;
-     caras[c]._2=num_aux-1+j*num_aux;
+     caras[c]._1=num_aux-1+j*num_aux;
+     caras[c]._2=((j+1)%num)*num_aux+num_aux-1;
      c+=1;
  }
 

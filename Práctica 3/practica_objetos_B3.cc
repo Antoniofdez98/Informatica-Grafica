@@ -16,6 +16,8 @@ typedef enum{CUBO, PIRAMIDE, OBJETO_PLY, ROTACION, CILINDRO, CONO, ESFERA, EXTRU
 _tipo_objeto t_objeto=CUBO;
 _modo   modo=POINTS;
 
+bool animacion = false;
+
 // variables que definen la posicion de la camara en coordenadas polares
 GLfloat Observer_distance;
 GLfloat Observer_angle_x;
@@ -248,6 +250,16 @@ switch (Tecla1){
         if (compas.giro_segundo_brazo_completo < compas.giro_segundo_brazo_completo_min)
             compas.giro_segundo_brazo_completo = compas.giro_segundo_brazo_completo_min;break;
     case GLUT_KEY_F11:compas.giro_rueda+=5;break;
+    case GLUT_KEY_F12:
+                if (animacion == false)
+                {
+                        animacion = true;
+                }
+                else
+                {
+                        animacion = false;
+                }
+                break;
    /*
    case GLUT_KEY_F1:excavadora.giro_cabina+=5;break;
    case GLUT_KEY_F2:excavadora.giro_cabina-=5;break;
@@ -275,6 +287,14 @@ switch (Tecla1){
 glutPostRedisplay();
 }
 
+void movimiento_animado()
+{
+        if (animacion == true)
+        {
+                compas.giro_rueda+=0.01;  
+                glutPostRedisplay();
+        }
+}
 
 
 //***************************************************************************
@@ -378,6 +398,8 @@ glutReshapeFunc(change_window_size);
 glutKeyboardFunc(normal_key);
 // asignación de la funcion llamada "tecla_Especial" al evento correspondiente
 glutSpecialFunc(special_key);
+
+glutIdleFunc(movimiento_animado);
 
 // funcion de inicialización
 initialize();

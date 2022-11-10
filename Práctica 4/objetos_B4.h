@@ -49,6 +49,7 @@ void draw_iluminacion_suave();
 /* asignación de colores */
 void 	colors_random();
 void 	colors_chess(float r1, float g1, float b1, float r2, float g2, float b2);
+void   colors_lambert_c(float l_x, float l_y, float l_z, float r, float g, float b);
 
 //Metodos a escribir
 void calcular_normales_caras();

@@ -32,4 +32,5 @@ Movimientos del Compás:
  - 'F9' Mueve la patilla completa de la derecha hacia abajo
  - 'F10' Mueve la patilla completa de la derecha hacia arriba
  - 'F11' Gira la rueda y la tuerca del centro 
+ - 'F12' Gira la rueda y la tuerca del centro indefinidamente
  
