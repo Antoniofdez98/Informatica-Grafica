@@ -6,11 +6,10 @@
 #include <GL/gl.h>
 #include "vertex.h"
 #include <stdlib.h>
-#include "file_ply_stl.hpp"
 
 
 const float AXIS_SIZE=5000;
-typedef enum{POINTS,EDGES,SOLID,SOLID_COLORS,SOLID_ILLUMINATED_FLAT,SOLID_ILLUMINATED_GOURAUD,SELECT} _modo;
+typedef enum{POINTS,EDGES,SOLID,SOLID_COLORS,SELECT} _modo;
 
 //*************************************************************************
 // clase punto
@@ -40,35 +39,16 @@ public:
 void 	draw_aristas(float r, float g, float b, int grosor);
 void   draw_solido(float r, float g, float b);
 void 	draw_solido_colores();
+void   draw_seleccion(int r, int g, int b);
 void 	draw(_modo modo, float r, float g, float b, float grosor);
-
-//Metodos a escribir
-void draw_iluminacion_plana();
-void draw_iluminacion_suave();
-void draw_seleccion(int r, int g, int b);
 
 /* asignación de colores */
 void 	colors_random();
 void 	colors_chess(float r1, float g1, float b1, float r2, float g2, float b2);
-void   colors_lambert_c(float l_x, float l_y, float l_z, float r, float g, float b);
 
-//Metodos a escribir
-void calcular_normales_caras();
-void calcular_normales_vertices();
 
 vector<_vertex3i> caras;
 vector<_vertex3f> colores_caras;
-
-//Almacenamos los calculos
-vector<_vertex3f> normales_caras;
-vector<_vertex3f> normales_vertices;
-
-bool b_normales_caras;
-bool b_normales_vertices;
-
-_vertex4f ambiente_difusa; //coeficientes ambiente y difuso
-_vertex4f especular;       //coeficiente especular
-float brillo;              //exponente del brillo
 };
 
 //*************************************************************************
@@ -387,9 +367,8 @@ float ancho;
 float alto;
 float fondo;
 
-_cubo cubo;
-
 protected:
+_cubo cubo;
 };
 
 //************************************************************************
@@ -438,7 +417,7 @@ public:
        _compas();
        
 void  draw(_modo modo, float r, float g, float b, float grosor);
-void seleccion();
+void  seleccion();
 
 float desplazamiento;
 float giro_primer_brazo;
@@ -457,11 +436,10 @@ float giro_segundo_brazo_min;
 float giro_compas;
 float giro_rueda;
 
-float color_pick[3];
-int color_selec[3][3];
-int activo[3];
-
-int piezas;
+float  color_pick[3];
+int    color_selec[10][10];
+int    activo[10];
+int    piezas;
 
 protected:
 _brazo2 brazo2;

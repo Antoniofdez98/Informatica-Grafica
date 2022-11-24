@@ -1,4 +1,4 @@
-# Práctica 4
+# Práctica 3
 
 Compilar y Ejecutar - make
 
@@ -8,8 +8,6 @@ Presionando Teclas:
  - '2' Dibuja las líneas
  - '3' Dibuja en un color sólido
  - '4' Dibuja en colores
- - '5' Dibuja con iluminación plana
- - '6' Dibuja con iluminación suave
  - 'P' Dibuja la Pirámide
  - 'C' Dibuja el Cubo
  - 'O' Dibuja el objeto PLY
@@ -32,5 +30,4 @@ Movimientos del Compás:
  - 'F9' Mueve la patilla completa de la derecha hacia abajo
  - 'F10' Mueve la patilla completa de la derecha hacia arriba
  - 'F11' Gira la rueda y la tuerca del centro 
- - 'F12' Gira la rueda y la tuerca del centro indefinidamente
  

@@ -37,14 +37,14 @@ _objeto_ply  ply;
 _rotacion rotacion;
 _cilindro cilindro(1,2,6); 
 _cono cono(1,2,6);
-_esfera esfera(1,16,16);
+_esfera esfera(1,6,6);
 _excavadora excavadora;
 _extrusion *extrusion;
 _compas compas;
 
 // _objeto_ply *ply;
 
-int estadoRaton[3], xc, yc, Ancho, Alto, cambio = 0, factor = 1.0;
+int estadoRaton[3], xc, yc;
 
 void pick_color(int x, int y);
 
@@ -114,6 +114,7 @@ glVertex3f(0,0,AXIS_SIZE);
 glEnd();
 }
 
+
 //**************************************************************************
 // Funcion que dibuja los objetos
 //****************************2***********************************************
@@ -136,51 +137,6 @@ switch (t_objeto){
 
 }
 
-void vista_orto()
-{
-  glViewport(Ancho / 2, Alto / 2, Ancho / 2, Alto / 2);
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(-5 * factor, 5 * factor, -5 * factor, 5 * factor, -100, 100);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-
-  draw_axis();
-  draw_objects();
-
-  glViewport(0, Alto / 2, Ancho / 2, Alto / 2);
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(-5 * factor, 5 * factor, -5 * factor, 5 * factor, -100, 100);
-  glRotatef(90, 1, 0, 0);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  draw_axis();
-  draw_objects();
-
-  glViewport(0, 0, Ancho / 2, Alto / 2);
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(-5 * factor, 5 * factor, -5 * factor, 5 * factor, -100, 100);
-  glRotatef(90, 0, 1, 0);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  draw_axis();
-  draw_objects();
-
-  //Otra perspectiva
-  glViewport(Ancho / 2, 0, Ancho / 2, Alto / 2);
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glFrustum(-Size_x, Size_x, -Size_y, Size_y, Front_plane, Back_plane);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  glTranslatef(0, 0, -Observer_distance);
-  glRotatef(Observer_angle_x, 1, 0, 0);
-  glRotatef(Observer_angle_y, 0, 1, 0);
-  draw_axis();
-  draw_objects();
-}
 
 //**************************************************************************
 //
@@ -188,30 +144,20 @@ void vista_orto()
 
 void draw(void)
 {
-  glDrawBuffer(GL_FRONT);
-  clean_window();
+clean_window();
+change_observer();
+draw_axis();
+draw_objects();
+glutSwapBuffers();
 
-  if (cambio == 0)
-  {
-    glViewport(0, 0, Ancho, Alto);
-    change_projection();
-    change_observer();
-    draw_axis();
-    draw_objects();
-  }
-  else
-  {
-    vista_orto();
-  }
-  if (t_objeto == COMPAS)
-  {
-    glDrawBuffer(GL_BACK);
-    clean_window();
-    change_observer();
-    compas.seleccion();
+if (t_objeto==COMPAS)
+  {glDrawBuffer(GL_BACK);
+   clean_window();
+   change_observer();
+   compas.seleccion();
   }
 
-  glFlush();
+glFlush();
 }
 
 
@@ -226,15 +172,13 @@ void draw(void)
 
 void change_window_size(int Ancho1,int Alto1)
 {
-  float Aspect_ratio;
+float Aspect_ratio;
 
-  Aspect_ratio = (float)Alto1 / (float)Ancho1;
-  Size_y = Size_x * Aspect_ratio;
-  change_projection();
-  glViewport(0, 0, Ancho1, Alto1);
-  Ancho = Ancho1;
-  Alto = Alto1;
-  glutPostRedisplay();
+Aspect_ratio=(float) Alto1/(float )Ancho1;
+Size_y=Size_x*Aspect_ratio;
+change_projection();
+glViewport(0,0,Ancho1,Alto1);
+glutPostRedisplay();
 }
 
 
@@ -255,12 +199,6 @@ switch (toupper(Tecla1)){
 	case '2':modo=EDGES;break;
 	case '3':modo=SOLID;break;
 	case '4':modo=SOLID_COLORS;break;
-	case '5':modo = SOLID_ILLUMINATED_FLAT;glEnable(GL_LIGHT1);break;
-	case '6':modo = SOLID_ILLUMINATED_GOURAUD;glEnable(GL_LIGHT1);break;
-	case '7':glDisable(GL_LIGHT1);break;
-    case '8':glEnable(GL_LIGHT1);break;
-	case '9':glDisable(GL_LIGHT2);break;
-    case '0':glEnable(GL_LIGHT2);break;
         case 'P':t_objeto=PIRAMIDE;break;
         case 'C':t_objeto=CUBO;break;
         case 'O':t_objeto=OBJETO_PLY;break;	
@@ -271,10 +209,6 @@ switch (toupper(Tecla1)){
         case 'A':t_objeto=EXCAVADORA;break;
         case 'X':t_objeto=EXTRUSION;break;
         case 'M':t_objeto=COMPAS;break;
-        case ',':cambio = 0;break;
-        case '.':cambio = 1;break;
-        case '+':factor = factor+0.1;break;
-        case '-':factor = factor-0.1;break;
 	}
 glutPostRedisplay();
 }
@@ -374,137 +308,97 @@ void movimiento_animado()
         }
 }
 
+
 //***************************************************************************
 // Funciones para manejo de eventos del ratón
 //***************************************************************************
 
-void clickRaton(int boton, int estado, int x, int y)
+void clickRaton( int boton, int estado, int x, int y )
 {
-  if (boton == GLUT_RIGHT_BUTTON)
-  {
-    if (estado == GLUT_DOWN)
-    {
+if(boton== GLUT_RIGHT_BUTTON) {
+   if( estado == GLUT_DOWN) {
       estadoRaton[2] = 1;
-      xc = x;
-      yc = y;
-    }
-    else
-      estadoRaton[2] = 1;
-  }
-  if (boton == GLUT_LEFT_BUTTON)
-  {
-    if (estado == GLUT_DOWN)
-    {
+      xc=x;
+      yc=y;
+     } 
+   else estadoRaton[2] = 1;
+   }
+if(boton== GLUT_LEFT_BUTTON) {
+  if( estado == GLUT_DOWN) {
       estadoRaton[2] = 2;
-      xc = x;
-      yc = y;
+      xc=x;
+      yc=y;
       pick_color(xc, yc);
+    } 
+  }
+}
+
+/*************************************************************************/
+
+void getCamara (GLfloat *x, GLfloat *y)
+{
+*x=Observer_angle_x;
+*y=Observer_angle_y;
+}
+
+/*************************************************************************/
+
+void setCamara (GLfloat x, GLfloat y)
+{
+Observer_angle_x=x;
+Observer_angle_y=y;
+}
+
+
+
+/*************************************************************************/
+
+void RatonMovido( int x, int y )
+{
+float x0, y0, xn, yn; 
+if(estadoRaton[2]==1) 
+    {getCamara(&x0,&y0);
+     yn=y0+(y-yc);
+     xn=x0-(x-xc);
+     setCamara(xn,yn);
+     xc=x;
+     yc=y;
+     glutPostRedisplay();
     }
-  }
-}
-
-
-/*************************************************************************/
-
-void getCamara(GLfloat *x, GLfloat *y)
-{
-  *x = Observer_angle_x;
-  *y = Observer_angle_y;
-}
-
-/*************************************************************************/
-
-void setCamara(GLfloat x, GLfloat y)
-{
-  Observer_angle_x = x;
-  Observer_angle_y = y;
-}
-
-/*************************************************************************/
-
-void RatonMovido(int x, int y)
-{
-  float x0, y0, xn, yn;
-  if (estadoRaton[2] == 1)
-  {
-    getCamara(&x0, &y0);
-    yn = y0 + (y - yc);
-    xn = x0 - (x - xc);
-    setCamara(xn, yn);
-    xc = x;
-    yc = y;
-    glutPostRedisplay();
-  }
 }
 
 void procesar_color(unsigned char color[3])
 {
-  int i;
+int i;
 
-  for (i = 0; i < compas.piezas; i++)
-  {
-    if (color[0] == compas.color_selec[0][i])
-    {
-      if (compas.activo[i] == 0)
-      {
-        compas.activo[i] = 1;
-      }
-      else
-      {
-        compas.activo[i] = 0;
-      }
-      glutPostRedisplay();
-    }
-  }
+for (i=0;i<compas.piezas;i++)
+   {if (color[0]==compas.color_selec[0][i])
+       {if (compas.activo[i]==0) 
+                      {compas.activo[i]=1;
+                      }
+                  else 
+                      {compas.activo[i]=0;
+                      }
+         glutPostRedisplay();
+        }
+    }                
 }
+
+
 
 void pick_color(int x, int y)
 {
-  GLint viewport[4];
-  unsigned char pixel[3];
+GLint viewport[4];
+unsigned char pixel[3];
 
-  glGetIntegerv(GL_VIEWPORT, viewport);
-  glReadBuffer(GL_BACK);
-  glReadPixels(x, viewport[3] - y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, (GLubyte *)&pixel[0]);
-  printf(" valor x %d, valor y %d, color %d, %d, %d \n", x, y, pixel[0], pixel[1], pixel[2]);
+glGetIntegerv(GL_VIEWPORT, viewport);
+glReadBuffer(GL_BACK);
+glReadPixels(x,viewport[3]-y,1,1,GL_RGB,GL_UNSIGNED_BYTE,(GLubyte *) &pixel[0]);
+printf(" valor x %d, valor y %d, color %d, %d, %d \n",x,y,pixel[0],pixel[1],pixel[2]);
 
-  procesar_color(pixel);
+procesar_color(pixel);
 }
 
-
-//*********************************************************************************************************************
-// Luces
-//*********************************************************************************************************************
-
-void luz1()
-{
-	GLfloat luz_ambiente[] = {0.2, 0.2, 0.2, 1.0},
-        luz_difusa[] = {1.0, 1.0, 1.0, 1.0},
-        luz_especular[] = {1.0, 0.0, 1.0, 1.0},
-		    pos1[] = {0, 20.0, 40.0, 1.0};
-
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, luz_difusa);
-  glLightfv(GL_LIGHT1, GL_AMBIENT, luz_ambiente);
-	glLightfv(GL_LIGHT1, GL_SPECULAR, luz_especular);
-	glLightfv(GL_LIGHT1, GL_POSITION, pos1);
-
-	glDisable(GL_LIGHT0);
-	glEnable(GL_LIGHT1);
-}
-
-void luz2()
-{
-	GLfloat luz_ambiente[] = {0.2, 0.2, 0.2, 1.0},
-        luz_difusa[] = {1.0, 1.0, 1.0, 1.0},
-        luz_especular[] = {1.0, 0.0, 1.0, 1.0},
-		    pos1[] = {0, 20.0, 40.0, 1.0};
-
-	glLightfv(GL_LIGHT2, GL_DIFFUSE, luz_difusa);
-  glLightfv(GL_LIGHT2, GL_AMBIENT, luz_ambiente);
-	glLightfv(GL_LIGHT2, GL_SPECULAR, luz_especular);
-	glLightfv(GL_LIGHT2, GL_POSITION, pos1);
-
-}
 
 //***************************************************************************
 // Funcion de incializacion
@@ -597,7 +491,7 @@ glutInitWindowSize(Window_width,Window_high);
 
 // llamada para crear la ventana, indicando el titulo (no se visualiza hasta que se llama
 // al bucle de eventos)
-glutCreateWindow("PRACTICA - 4");
+glutCreateWindow("PRACTICA - 3");
 
 // asignación de la funcion llamada "dibujar" al evento de dibujo
 glutDisplayFunc(draw);
@@ -610,18 +504,15 @@ glutSpecialFunc(special_key);
 
 glutIdleFunc(movimiento_animado);
 
+// eventos ratón
+glutMouseFunc( clickRaton );
+glutMotionFunc( RatonMovido );
+
 // funcion de inicialización
 initialize();
 
 // creación del objeto ply
 ply.parametros(argv[1]);
-
-// eventos ratón
-glutMouseFunc(clickRaton);
-glutMotionFunc(RatonMovido);
-
-luz1();
-luz2();
 
 //ply = new _objeto_ply(argv[1]);
 
